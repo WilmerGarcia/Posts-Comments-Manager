@@ -2,7 +2,7 @@
 
 App del proyecto Posts-Comments-Manager. Generado con [Angular CLI](https://github.com/angular/angular-cli) 17.
 
-- **Angular** 17
+- **Angular** 18
 - **TypeScript** 5.4
 - **Tailwind CSS** 3.x (estilos)
 - **SCSS** para estilos por componente
