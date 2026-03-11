@@ -9,13 +9,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('me')
+  @Get()
   getProfile(@CurrentUser('id') userId: string) {
     return this.usersService.findById(userId);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('me')
+  @Patch()
   updateProfile(@CurrentUser('id') userId: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(userId, updateUserDto);
   }

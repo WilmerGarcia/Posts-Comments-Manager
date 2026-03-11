@@ -3,8 +3,7 @@ import { Document } from 'mongoose';
 
 export type PostDocument = Post & Document;
 
-// Modelo mínimo: title, body, author. createdAt/updatedAt los agrega timestamps
-@Schema({ timestamps: true })
+// Modelo mínimo: title, body, author. createdAt/updatedAt automáticos.
 export class Post {
   @Prop({ required: true })
   title: string;

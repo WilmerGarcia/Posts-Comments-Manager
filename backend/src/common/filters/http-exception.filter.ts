@@ -9,7 +9,7 @@ import {
 import { Request, Response } from 'express';
 import { ApiResponse } from '../utils/api-response.util';
 
-// Filtro global: cualquier error (HttpException o no) termina acá. Devuelve siempre { success: false, message, status }
+// Filtro global: cualquier error (HttpException o no) termina acá. 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);

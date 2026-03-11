@@ -8,7 +8,7 @@ export class CreatePostDto {
   @MaxLength(200)
   title: string;
 
-  @ApiProperty({ example: 'Contenido (body) del post...' })
+  @ApiProperty({ example: 'Contenido del post...' })
   @IsString()
   @MinLength(1, { message: 'El body no puede estar vacío' })
   body: string;
