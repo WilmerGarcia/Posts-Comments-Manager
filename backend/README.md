@@ -1,12 +1,22 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+## Backend - Posts Comments Manager
 
-  <p align="center">API del proyecto Posts-Comments-Manager. Backend con <a href="http://nodejs.org" target="_blank">Node.js</a> y <a href="https://nestjs.com" target="_blank">NestJS</a>.</p>
+API REST del proyecto **Posts Comments Manager**, construida con [NestJS](https://nestjs.com), [Node.js](https://nodejs.org) y MongoDB (Mongoose).
 
-## Descripción
+Esta API expone endpoints para:
 
-API REST construida con [Nest](https://github.com/nestjs/nest): módulos de usuarios, autenticación, publicaciones (posts) y comentarios, con MongoDB (Mongoose).
+- **Autenticación y usuarios**: registro, login y gestión básica de usuarios mediante JWT.
+- **Posts**: crear, listar, actualizar y eliminar publicaciones.
+- **Comentarios**: crear, listar y eliminar comentarios asociados a un post.
+- **Reglas de negocio principales**:
+  - Solo el **creador de un post** puede **editarlo o eliminarlo**.
+  - Un **comentario** puede ser eliminado por:
+    - El **creador del post** al que pertenece.
+    - El **autor del comentario**.
+
+## Requisitos previos
+
+- Node.js (versión recomendada 18+)
+- MongoDB en ejecución (local o remoto)
 
 ## Instalación
 
@@ -14,7 +24,8 @@ API REST construida con [Nest](https://github.com/nestjs/nest): módulos de usua
 npm install
 ```
 
-Copia `.env.example` a `.env` y configura las variables (MongoDB, JWT, etc.).
+- Copia `.env.example` a `.env`.
+- Configura las variables necesarias: conexión a MongoDB, secretos JWT, puertos, etc.
 
 ## Ejecutar la aplicación
 
@@ -29,6 +40,19 @@ npm run start:dev
 npm run start:prod
 ```
 
+La API por defecto suele exponerse en `http://localhost:3000` (ajusta según tu `.env`).
+
+## Documentación con Swagger
+
+Este backend incluye **documentación automática de la API con Swagger**.
+
+- Una vez levantado el servidor, abre en el navegador:
+  - `http://localhost:3000/api` (o la ruta que tengas configurada) para ver la **documentación interactiva** generada por Swagger.
+- Desde esta interfaz puedes:
+  - Explorar todos los endpoints disponibles.
+  - Ver los modelos de datos (DTOs) y respuestas.
+  - Probar peticiones directamente desde el navegador (incluyendo autenticación con JWT si está configurada en Swagger).
+
 ## Tests
 
 ```bash
@@ -42,9 +66,13 @@ npm run test:e2e
 npm run test:cov
 ```
 
-## Soporte
+## Tecnologías principales
 
-Nest es un proyecto open source bajo licencia MIT. Más información en [docs.nestjs.com](https://docs.nestjs.com).
+- **NestJS** como framework principal.
+- **TypeScript**.
+- **MongoDB** con **Mongoose** para la capa de persistencia.
+- **JWT** para autenticación.
+- **Swagger** para documentación de la API.
 
 ## Licencia
 
