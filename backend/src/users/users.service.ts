@@ -1,9 +1,11 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -35,13 +37,9 @@ export class UsersService {
   }
 
   async update(id: string, dto: UpdateUserDto): Promise<User> {
-    if (dto.email !== undefined) {
-      const existing = await this.userModel.findOne({ email: dto.email, _id: { $ne: id } }).exec();
-      if (existing) throw new ConflictException('Ya existe un usuario con ese email');
-    }
     const update: Record<string, unknown> = {};
     if (dto.name !== undefined) update.name = dto.name;
-    if (dto.email !== undefined) update.email = dto.email;
+    if (dto.avatar !== undefined) update.avatar = dto.avatar;
     const updated = await this.userModel
       .findByIdAndUpdate(id, update, { new: true })
       .lean()
@@ -50,6 +48,20 @@ export class UsersService {
       throw new NotFoundException('Usuario no encontrado');
     }
     return this.toPublic(updated as UserDocument);
+  }
+
+  async updatePassword(id: string, dto: UpdatePasswordDto): Promise<void> {
+    const user = await this.userModel.findById(id).exec();
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+    const isMatch = await bcrypt.compare(dto.currentPassword, user.password);
+    if (!isMatch) {
+      throw new UnauthorizedException('La contraseña actual no es correcta');
+    }
+    const hashed = await bcrypt.hash(dto.newPassword, 10);
+    user.password = hashed;
+    await user.save();
   }
 
   /** Devuelve usuario sin password para respuestas */

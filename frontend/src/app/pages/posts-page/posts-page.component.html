@@ -1,0 +1,216 @@
+<div class="posts-page">
+  <header class="posts-header">
+    <div class="posts-header-inner">
+      <a routerLink="/posts" class="posts-logo">
+        <span class="posts-logo-icon">PCM</span>
+        <div class="posts-logo-text">
+          <span class="posts-logo-title">Posts & Comments</span>
+          <span class="posts-logo-subtitle">Manager</span>
+        </div>
+      </a>
+
+      <div class="posts-header-actions">
+        @if (auth.currentUser; as user) {
+          <div class="posts-user">
+            <span class="posts-user-label">Conectado como</span>
+            <span class="posts-user-name">{{ user.name || user.email }}</span>
+            <span class="posts-user-role" [class.role-admin]="user.role === 'admin'">
+              {{ user.role === 'admin' ? 'Admin' : 'Usuario' }}
+            </span>
+          </div>
+          <a routerLink="/account" class="btn-secondary text-sm py-2">
+            Mi cuenta
+          </a>
+          <button type="button" class="btn-secondary text-sm py-2" (click)="logout()">
+            Cerrar sesión
+          </button>
+        } @else {
+          <a routerLink="/auth" class="btn-primary text-sm py-2">
+            Iniciar sesión
+          </a>
+        }
+      </div>
+    </div>
+  </header>
+
+  <main class="posts-main">
+    <section class="posts-hero">
+      <div>
+        <h1 class="posts-hero-title">Posts</h1>
+        <p class="posts-hero-subtitle">
+          @if (auth.currentUser?.role === 'admin') {
+            Vista de administración: revisa, corrige y publica posts.
+          } @else {
+            Explora las publicaciones ya publicadas por la comunidad.
+          }
+        </p>
+      </div>
+
+      <div class="posts-toolbar">
+        <div class="posts-filters">
+          <label for="filter-status" class="posts-filter-label">Estado</label>
+          <select
+            id="filter-status"
+            class="posts-filter-select"
+            [ngModel]="filter"
+            (ngModelChange)="filter = $event"
+          >
+            @for (opt of filterOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+
+        @if (auth.currentUser) {
+          <div class="posts-view-toggle">
+            <button
+              type="button"
+              class="posts-filter"
+              [class.active]="view === 'feed'"
+              (click)="view = 'feed'"
+            >
+              Timeline
+            </button>
+            <button
+              type="button"
+              class="posts-filter"
+              [class.active]="view === 'mine'"
+              (click)="view = 'mine'"
+            >
+              Mis posts
+            </button>
+          </div>
+          <button type="button" class="btn-primary" (click)="openCreateForm()">
+            Crear post
+          </button>
+        }
+      </div>
+
+      @if (showCreateForm) {
+        <div class="posts-create-modal-backdrop" (click)="closeCreateForm()">
+          <div class="posts-create-modal card" (click)="$event.stopPropagation()">
+            <div class="posts-create-modal-header">
+              <h2 class="posts-create-title">Nuevo post</h2>
+              <button type="button" class="posts-create-close" (click)="closeCreateForm()">
+                ✕
+              </button>
+            </div>
+            <p class="posts-create-subtitle">
+              Crea un nuevo post. Las imágenes son opcionales y se suben como archivos reales.
+            </p>
+            <form
+              [formGroup]="createForm"
+              (ngSubmit)="submitCreate()"
+              class="posts-create-form"
+            >
+              <div class="detail-field">
+                <label for="create-title" class="detail-label">Título</label>
+                <input
+                  id="create-title"
+                  type="text"
+                  formControlName="title"
+                  class="input-field"
+                  placeholder="Título del post"
+                />
+              </div>
+              <div class="detail-field">
+                <label for="create-body" class="detail-label">Contenido</label>
+                <textarea
+                  id="create-body"
+                  formControlName="body"
+                  class="input-field min-h-[140px] resize-y"
+                  placeholder="Escribe el contenido..."
+                  rows="5"
+                ></textarea>
+              </div>
+              <div class="detail-field">
+                <label for="create-images" class="detail-label">
+                  Imágenes (opcional)
+                  <span class="detail-label-hint">Se guardan en el backend</span>
+                </label>
+                <input
+                  id="create-images"
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  (change)="onImagesSelected($event)"
+                  class="input-file"
+                />
+                <p class="posts-create-images-hint">
+                  Puedes seleccionar varias imágenes. Si no eliges ninguna, el post se creará igual.
+                </p>
+                @if (selectedImagesNames.length) {
+                  <ul class="posts-create-images-list">
+                    @for (name of selectedImagesNames; track name) {
+                      <li class="posts-create-images-item">{{ name }}</li>
+                    }
+                  </ul>
+                }
+              </div>
+              <div class="posts-create-actions">
+                <button type="button" class="btn-secondary" (click)="closeCreateForm()">
+                  Cancelar
+                </button>
+                <button type="submit" class="btn-primary" [disabled]="creating">
+                  {{ creating ? 'Creando…' : 'Crear post' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      }
+    </section>
+
+    <section class="posts-list">
+      @if (loading) {
+        <div class="posts-loading">
+          <span class="posts-loading-dot"></span>
+          <span class="posts-loading-dot"></span>
+          <span class="posts-loading-dot"></span>
+          <span class="text-stone-500 text-sm ml-3">Cargando posts…</span>
+        </div>
+      }
+
+      @if (error) {
+        <div class="posts-error" role="alert">
+          {{ error }}
+        </div>
+      }
+
+      @if (!loading && !error && filteredPosts().length === 0) {
+        <div class="posts-empty">
+          <p class="posts-empty-title">No hay posts todavía</p>
+          <p class="posts-empty-text">Las publicaciones aparecerán aquí cuando se creen.</p>
+        </div>
+      }
+
+      <div class="posts-grid">
+        @for (post of filteredPosts(); track post._id) {
+          <article
+            class="posts-card card cursor-pointer transition-all duration-200 hover:shadow-card-hover hover:border-brand-200"
+            (click)="goToDetail(post)"
+          >
+            <header class="posts-card-header">
+              <h2 class="posts-card-title">{{ post.title }}</h2>
+              <span
+                class="posts-card-badge"
+                [ngClass]="statusClass(post.status)"
+              >
+                {{ statusLabel(post.status) }}
+              </span>
+            </header>
+            @if (post.images?.length) {
+              <div class="posts-card-images">
+                <img [src]="imageUrl(post.images?.[0])" alt="" class="posts-card-thumb" />
+              </div>
+            }
+            <p class="posts-card-body">{{ post.body }}</p>
+            <footer class="posts-card-footer">
+              <span class="posts-card-author">por {{ post.author }}</span>
+            </footer>
+          </article>
+        }
+      </div>
+    </section>
+  </main>
+</div>

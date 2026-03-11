@@ -1,0 +1,116 @@
+<div class="account-page">
+  <div class="account-inner">
+    <header class="account-header">
+      <div>
+        <h1 class="account-title">Mi cuenta</h1>
+        <p class="account-subtitle">Gestiona tu perfil, tu nombre visible y tu contraseña.</p>
+      </div>
+      <button type="button" class="btn-secondary text-sm py-2" (click)="router.navigateByUrl('/posts')">
+        Volver a posts
+      </button>
+    </header>
+
+    <main class="account-main">
+      <section class="account-section card">
+        <h2 class="account-section-title">Perfil</h2>
+        <p class="account-section-desc">
+          Actualiza tu nombre y tu foto de perfil. El correo no se puede cambiar.
+        </p>
+        @if (auth.currentUser; as user) {
+          <div class="account-profile">
+            <div class="account-avatar-block">
+              <div class="account-avatar-wrapper">
+                @if (avatarUrl(); as url) {
+                  <img [src]="url" alt="Avatar" class="account-avatar-img" />
+                } @else {
+                  <div class="account-avatar-placeholder">
+                    <span>
+                      {{ (user.name || user.email || '?')[0] | uppercase }}
+                    </span>
+                  </div>
+                }
+              </div>
+              <div class="account-avatar-input">
+                <label for="avatar" class="detail-label">Foto de perfil</label>
+                <input
+                  id="avatar"
+                  type="file"
+                  accept="image/*"
+                  (change)="onAvatarSelected($event)"
+                  class="input-file"
+                />
+                <p class="account-hint">
+                  Se guardará en el backend. Opcional.
+                </p>
+              </div>
+            </div>
+
+            <form [formGroup]="profileForm" (ngSubmit)="submitProfile()" class="account-form">
+              <div class="detail-field">
+                <label class="detail-label">Email</label>
+                <input
+                  type="email"
+                  class="input-field"
+                  [value]="user.email"
+                  disabled
+                />
+                <p class="account-hint">El correo no se puede modificar.</p>
+              </div>
+
+              <div class="detail-field">
+                <label for="name" class="detail-label">Nombre</label>
+                <input
+                  id="name"
+                  type="text"
+                  formControlName="name"
+                  class="input-field"
+                  placeholder="Tu nombre público"
+                />
+              </div>
+
+              <div class="account-actions">
+                <button type="submit" class="btn-primary" [disabled]="savingProfile">
+                  {{ savingProfile ? 'Guardando…' : 'Guardar cambios' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        }
+      </section>
+
+      <section class="account-section card">
+        <h2 class="account-section-title">Contraseña</h2>
+        <p class="account-section-desc">
+          Cambia tu contraseña. Necesitas introducir primero la actual.
+        </p>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="submitPassword()" class="account-form account-form-password">
+          <div class="detail-field">
+            <label for="currentPassword" class="detail-label">Contraseña actual</label>
+            <input
+              id="currentPassword"
+              type="password"
+              formControlName="currentPassword"
+              class="input-field"
+            />
+          </div>
+          <div class="detail-field">
+            <label for="newPassword" class="detail-label">Nueva contraseña</label>
+            <input
+              id="newPassword"
+              type="password"
+              formControlName="newPassword"
+              class="input-field"
+            />
+          </div>
+          <div class="account-actions">
+            <button type="submit" class="btn-secondary" [disabled]="savingPassword">
+              {{ savingPassword ? 'Actualizando…' : 'Actualizar contraseña' }}
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+</div>
+

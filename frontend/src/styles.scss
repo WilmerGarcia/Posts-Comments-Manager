@@ -2,4 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --color-brand: #0d9488;
+  --color-brand-hover: #0f766e;
+  --color-surface: #faf9f7;
+  --color-text: #1c1917;
+  --color-text-muted: #78716c;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply font-sans antialiased text-stone-800 bg-surface;
+  background-color: var(--color-surface);
+}
+
+/* Inputs y botones consistentes */
+input, textarea, button {
+  @apply font-sans;
+}
+
+input::placeholder,
+textarea::placeholder {
+  @apply text-stone-400;
+}
+
+/* Utilidad para enlaces con estilo brand */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-brand-600 text-white font-medium
+           px-4 py-2.5 text-sm
+           hover:bg-brand-700 active:bg-brand-800
+           focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed
+           transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl border border-stone-300 bg-white
+           text-stone-700 font-medium px-4 py-2.5 text-sm
+           hover:bg-stone-50 active:bg-stone-100
+           focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed
+           transition-colors duration-200;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-800
+           placeholder:text-stone-400
+           focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500
+           transition-shadow duration-200;
+  }
+
+  .card {
+    @apply bg-surface-card rounded-2xl border border-stone-200/80 shadow-card;
+  }
+}

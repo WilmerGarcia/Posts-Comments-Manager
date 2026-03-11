@@ -1,0 +1,102 @@
+<div class="auth-page">
+  <div class="auth-bg">
+    <div class="auth-bg-gradient"></div>
+    <div class="auth-bg-pattern" aria-hidden="true"></div>
+  </div>
+
+  <div class="auth-content">
+    <div class="auth-card card p-8 sm:p-10 w-full max-w-md">
+      <div class="auth-brand mb-8">
+        <span class="auth-logo">PCM</span>
+        @if (mode === 'login') {
+          <h1 class="auth-title">Inicia sesión</h1>
+          <p class="auth-subtitle">
+            Accede para crear y gestionar tus posts y comentarios.
+          </p>
+        } @else {
+          <h1 class="auth-title">Crea tu cuenta</h1>
+          <p class="auth-subtitle">
+            Regístrate para publicar y comentar en el gestor de posts.
+          </p>
+        }
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5">
+        @if (mode === 'register') {
+          <div>
+            <label for="name" class="auth-label">Nombre</label>
+            <input
+              id="name"
+              type="text"
+              formControlName="name"
+              class="input-field"
+              placeholder="Tu nombre (opcional)"
+            />
+          </div>
+        }
+
+        <div>
+          <label for="email" class="auth-label">Email</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="input-field"
+            placeholder="tu@ejemplo.com"
+          />
+          @if (form.get('email')?.invalid && form.get('email')?.touched) {
+            <p class="auth-error">Introduce un email válido.</p>
+          }
+        </div>
+
+        <div>
+          <label for="password" class="auth-label">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            class="input-field"
+            placeholder="••••••••"
+          />
+          @if (form.get('password')?.invalid && form.get('password')?.touched) {
+            <p class="auth-error">Mínimo 6 caracteres.</p>
+          }
+        </div>
+
+        @if (error) {
+          <div class="auth-message auth-message-error" role="alert">
+            {{ error }}
+          </div>
+        }
+        <button type="submit" class="btn-primary w-full py-3" [disabled]="loading">
+          @if (loading) {
+            <span class="auth-spinner" aria-hidden="true"></span>
+            @if (mode === 'login') { Entrando… } @else { Creando cuenta… }
+          } @else {
+            @if (mode === 'login') { Entrar } @else { Registrarme }
+          }
+        </button>
+      </form>
+
+      <div class="auth-footer mt-6 text-center text-sm text-stone-500">
+        @if (mode === 'login') {
+          <button
+            type="button"
+            class="auth-link"
+            (click)="switchMode('register')"
+          >
+            ¿No tienes cuenta? Regístrate
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="auth-link"
+            (click)="switchMode('login')"
+          >
+            ¿Ya tienes cuenta? Inicia sesión
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</div>
