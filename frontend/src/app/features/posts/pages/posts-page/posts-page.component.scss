@@ -36,7 +36,7 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 0.625rem;
-  background: linear-gradient(135deg, #0d9488, #0f766e);
+  background: linear-gradient(135deg, #1d4ed8, #020617);
   color: white;
   font-weight: 700;
   font-size: 0.75rem;
@@ -110,8 +110,8 @@
   margin-top: 0.125rem;
 
   &.role-admin {
-    color: #0f766e;
-    background: #ccfbf1;
+    color: #1d4ed8;
+    background: #dbeafe;
   }
 }
 
@@ -400,9 +400,9 @@
   }
 
   &.active {
-    background: #0d9488;
+    background: #2563eb;
     color: white;
-    border-color: #0d9488;
+    border-color: #2563eb;
   }
 }
 
@@ -420,7 +420,7 @@
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
-  background: #0d9488;
+  background: #2563eb;
   animation: postsPulse 1.2s ease-in-out infinite both;
 
   &:nth-child(2) {
@@ -537,9 +537,9 @@
   }
 
   &.bg-emerald-100 {
-    background: #d1fae5;
-    color: #047857;
-    border: 1px solid #a7f3d0;
+    background: #dbeafe;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
   }
 }
 
@@ -604,11 +604,11 @@
 }
 
 .btn-ver {
-  background: #0d9488;
+  background: #2563eb;
   color: white;
-  border-color: #0d9488;
+  border-color: #2563eb;
 }
 .btn-ver:hover {
-  background: #0f766e;
-  border-color: #0f766e;
+  background: #1d4ed8;
+  border-color: #1d4ed8;
 }

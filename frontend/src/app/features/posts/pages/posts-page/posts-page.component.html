@@ -249,12 +249,14 @@
           <article class="posts-card card">
             <header class="posts-card-header">
               <h2 class="posts-card-title">{{ post.title }}</h2>
-              <span
-                class="posts-card-badge"
-                [ngClass]="statusClass(post.status)"
-              >
-                {{ statusLabel(post.status) }}
-              </span>
+              @if (view === 'mine') {
+                <span
+                  class="posts-card-badge"
+                  [ngClass]="statusClass(post.status)"
+                >
+                  {{ statusLabel(post.status) }}
+                </span>
+              }
             </header>
             @if (post.images?.length) {
               <div class="posts-card-images">

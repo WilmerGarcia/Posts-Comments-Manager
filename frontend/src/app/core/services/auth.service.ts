@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AuthUser } from '../../models';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 
 interface AuthPayload {
   access_token: string;

@@ -17,14 +17,14 @@
 .auth-bg-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #f0fdfa 0%, #faf9f7 40%, #f5f4f2 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #faf9f7 40%, #e5e7eb 100%);
 }
 
 .auth-bg-pattern {
   position: absolute;
   inset: 0;
   opacity: 0.4;
-  background-image: radial-gradient(circle at 1px 1px, rgb(13 148 136 / 0.08) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, rgb(37 99 235 / 0.08) 1px, transparent 0);
   background-size: 24px 24px;
 }
 
@@ -63,13 +63,13 @@
   width: 3rem;
   height: 3rem;
   border-radius: 1rem;
-  background: linear-gradient(135deg, #0d9488, #0f766e);
+  background: linear-gradient(135deg, #2563eb, #020617);
   color: white;
   font-weight: 700;
   font-size: 1rem;
   letter-spacing: -0.02em;
   margin-bottom: 1.25rem;
-  box-shadow: 0 4px 14px rgb(13 148 136 / 0.35);
+  box-shadow: 0 4px 14px rgb(37 99 235 / 0.35);
 }
 
 .auth-title {
@@ -141,12 +141,12 @@
   padding: 0;
   background: none;
   font: inherit;
-  color: #0d9488;
+  color: #2563eb;
   cursor: pointer;
   text-decoration: none;
 }
 
 .auth-link:hover {
-  color: #0f766e;
+  color: #1d4ed8;
   text-decoration: underline;
 }

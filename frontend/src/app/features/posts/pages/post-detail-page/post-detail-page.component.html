@@ -13,9 +13,11 @@
             <p class="detail-article-author">por {{ p.author }}</p>
           </div>
           <div class="detail-article-status">
-            <span class="detail-badge" [ngClass]="statusBadgeClass(p.status)">
-              {{ statusLabel(p.status) }}
-            </span>
+            @if (isOwner()) {
+              <span class="detail-badge" [ngClass]="statusBadgeClass(p.status)">
+                {{ statusLabel(p.status) }}
+              </span>
+            }
             @if (canPublish()) {
               <button
                 type="button"
@@ -205,7 +207,7 @@
               ></textarea>
             </div>
             <div class="detail-form-footer">
-              <p class="detail-form-hint">Comentarios respetuosos y relacionados con el contenido.</p>
+              <p class="detail-form-hint">Por favor, escribe un comentario respetuoso y relacionado con el contenido.</p>
               <button type="submit" class="btn-primary" [disabled]="savingComment">
                 @if (savingComment) { Guardando… } @else { Publicar comentario }
               </button>

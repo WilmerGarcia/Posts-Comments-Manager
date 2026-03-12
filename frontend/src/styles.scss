@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --color-brand: #0d9488;
-  --color-brand-hover: #0f766e;
+  --color-brand: #2563eb;
+  --color-brand-hover: #1d4ed8;
   --color-surface: #faf9f7;
   --color-text: #1c1917;
   --color-text-muted: #78716c;
@@ -51,10 +51,10 @@ textarea::placeholder {
 
   /* Botones chip reutilizables para acciones pequeñas (editar / eliminar, etc.) */
   .btn-chip-success {
-    @apply inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50
-           text-emerald-600 text-xs font-medium px-3 py-1
-           hover:bg-emerald-600 hover:text-emerald-50 hover:border-emerald-600
-           focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2
+    @apply inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50
+           text-sky-600 text-xs font-medium px-3 py-1
+           hover:bg-sky-600 hover:text-sky-50 hover:border-sky-600
+           focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2
            disabled:opacity-50 disabled:cursor-not-allowed
            transition-colors duration-200;
   }

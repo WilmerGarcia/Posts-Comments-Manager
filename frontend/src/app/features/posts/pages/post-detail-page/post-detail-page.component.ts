@@ -105,7 +105,7 @@ export class PostDetailPageComponent implements OnInit {
     return comment.email === user.email;
   }
 
-  private isOwner(): boolean {
+  isOwner(): boolean {
     if (!this.post || !this.auth.currentUser) return false;
     const user = this.auth.currentUser;
     return this.post.author === (user.name || user.email);
