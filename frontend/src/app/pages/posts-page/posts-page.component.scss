@@ -62,9 +62,24 @@
   gap: 0.75rem;
 }
 
+.posts-user-menu {
+  position: relative;
+}
+
+.posts-user-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-inline: 0.9rem;
+}
+
+.posts-user-chevron {
+  font-size: 0.75rem;
+  color: #a8a29e;
+}
+
 .posts-user {
   text-align: right;
-  margin-right: 0.25rem;
 }
 
 .posts-user-label {
@@ -97,6 +112,48 @@
   &.role-admin {
     color: #0f766e;
     background: #ccfbf1;
+  }
+}
+
+.posts-user-dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 0.35rem;
+  min-width: 10.5rem;
+  padding: 0.35rem 0;
+  background: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow:
+    0 18px 45px rgba(15, 23, 42, 0.18),
+    0 0 0 1px rgba(148, 163, 184, 0.12);
+  border: 1px solid #e7e5e4;
+  z-index: 20;
+}
+
+.posts-user-dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8125rem;
+  color: #44403c;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background: #f5f5f4;
+  }
+}
+
+.posts-user-dropdown-item-danger {
+  color: #b91c1c;
+
+  &:hover {
+    background: #fef2f2;
   }
 }
 

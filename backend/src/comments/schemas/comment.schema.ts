@@ -3,8 +3,8 @@ import { Document, Types } from 'mongoose';
 
 export type CommentDocument = Comment & Document;
 
-// Relación con Post vía postId. CreatedAt automático, no updatedAt (no se actualizan comentarios, solo se crean)
-@Schema({ timestamps: { createdAt: true, updatedAt: false } })
+// Relación con Post vía postId. CreatedAt y updatedAt automáticos gracias a timestamps.
+@Schema({ timestamps: true })
 export class Comment {
   @Prop({ type: Types.ObjectId, ref: 'Post', required: true })
   postId: Types.ObjectId;

@@ -11,19 +11,33 @@
 
       <div class="posts-header-actions">
         @if (auth.currentUser; as user) {
-          <div class="posts-user">
-            <span class="posts-user-label">Conectado como</span>
-            <span class="posts-user-name">{{ user.name || user.email }}</span>
-            <span class="posts-user-role" [class.role-admin]="user.role === 'admin'">
-              {{ user.role === 'admin' ? 'Admin' : 'Usuario' }}
-            </span>
+          <div class="posts-user-menu">
+            <button
+              type="button"
+              class="posts-user-toggle btn-secondary text-sm py-2"
+              (click)="toggleUserMenu()"
+            >
+              <div class="posts-user">
+                <span class="posts-user-name">{{ user.name }}</span>
+              </div>
+              <span class="posts-user-chevron" aria-hidden="true">▾</span>
+            </button>
+
+            @if (userMenuOpen) {
+              <div class="posts-user-dropdown">
+                <a routerLink="/account" class="posts-user-dropdown-item" (click)="toggleUserMenu()">
+                  Mi cuenta
+                </a>
+                <button
+                  type="button"
+                  class="posts-user-dropdown-item posts-user-dropdown-item-danger"
+                  (click)="logout()"
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            }
           </div>
-          <a routerLink="/account" class="btn-secondary text-sm py-2">
-            Mi cuenta
-          </a>
-          <button type="button" class="btn-secondary text-sm py-2" (click)="logout()">
-            Cerrar sesión
-          </button>
         } @else {
           <a routerLink="/auth" class="btn-primary text-sm py-2">
             Iniciar sesión
@@ -137,7 +151,7 @@
                   class="input-file"
                 />
                 <p class="posts-create-images-hint">
-                  Puedes seleccionar varias imágenes. Si no eliges ninguna, el post se creará igual.
+                  Puedes seleccionar varias imágenes.
                 </p>
                 @if (selectedImagesNames.length) {
                   <ul class="posts-create-images-list">

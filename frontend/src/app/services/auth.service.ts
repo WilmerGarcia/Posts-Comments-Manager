@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { AuthUser, UserRole } from '../models';
+import { AuthUser } from '../models';
 import { environment } from '../../environments/environment.development';
 
 interface AuthPayload {
@@ -11,7 +11,6 @@ interface AuthPayload {
     email: string;
     name?: string;
     avatar?: string;
-    role?: UserRole;
   };
 }
 
@@ -69,7 +68,6 @@ export class AuthService {
             email: data.user.email,
             name: data.user.name,
             avatar: data.user.avatar,
-            role: data.user.role ?? 'user',
             token: data.access_token,
           };
           this.currentUserSubject.next(user);
@@ -89,7 +87,6 @@ export class AuthService {
             email: data.user.email,
             name: data.user.name,
             avatar: data.user.avatar,
-            role: data.user.role ?? 'user',
             token: data.access_token,
           };
           this.currentUserSubject.next(user);
@@ -176,10 +173,12 @@ export class AuthService {
   uploadAvatar(file: File) {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<{ path: string }>(
-      `${environment.apiUrl}/uploads/avatar`,
-      formData,
-    );
+    return this.http
+      .post<ApiSuccess<{ path: string }>>(
+        `${environment.apiUrl}/uploads/avatar`,
+        formData,
+      )
+      .pipe(map((res) => res.data));
   }
 }
 

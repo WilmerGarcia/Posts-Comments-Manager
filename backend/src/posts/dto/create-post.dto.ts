@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, MinLength, MaxLength, IsArray, IsUrl, IsOptional, IsIn } from 'class-validator';
+import { IsString, MinLength, MaxLength, IsArray, IsOptional, IsIn } from 'class-validator';
 import { POST_STATUS, PostStatus } from '../post-status.enum';
 
 const POST_STATUS_VALUES = Object.values(POST_STATUS) as [PostStatus, ...PostStatus[]];
@@ -22,14 +22,22 @@ export class CreatePostDto {
   @MaxLength(200)
   author: string;
 
+  @ApiPropertyOptional({
+    description: 'ID del usuario autenticado que creó el post',
+    example: '66123456789abcdef0123456',
+  })
+  @IsOptional()
+  @IsString()
+  createdByUserId?: string;
+
   @ApiPropertyOptional({ enum: Object.values(POST_STATUS), default: POST_STATUS.CREADO })
   @IsOptional()
   @IsIn(POST_STATUS_VALUES)
   status?: PostStatus;
 
-  @ApiPropertyOptional({ description: 'URLs de imágenes del post', type: [String], example: [] })
+  @ApiPropertyOptional({ description: 'Rutas de imágenes del post', type: [String], example: [] })
   @IsOptional()
   @IsArray()
-  @IsUrl({}, { each: true })
+  @IsString({ each: true })
   images?: string[];
 }

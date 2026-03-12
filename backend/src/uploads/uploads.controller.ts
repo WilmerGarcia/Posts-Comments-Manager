@@ -1,8 +1,18 @@
-import { Controller, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  UploadedFiles,
+  UseInterceptors,
+  Res,
+  NotFoundException,
+} from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
+import { Response } from 'express';
 
 function postsImagesStorage() {
   return diskStorage({
@@ -39,6 +49,20 @@ export class UploadsController {
     return paths;
   }
 
+  /**
+   * Endpoint explícito para servir imágenes de posts.
+   * Evita problemas si, por cualquier motivo, el ServeStaticModule no responde.
+   */
+  @Get('posts/:filename')
+  servePostImage(@Param('filename') filename: string, @Res() res: Response) {
+    const filePath = join(__dirname, '..', '..', 'uploads', 'posts', filename);
+    return res.sendFile(filePath, (err) => {
+      if (err) {
+        throw new NotFoundException('Imagen de post no encontrada');
+      }
+    });
+  }
+
   @Post('avatar')
   @UseInterceptors(
     FilesInterceptor('file', 1, {
@@ -49,6 +73,16 @@ export class UploadsController {
     const file = files[0];
     const path = `/uploads/avatars/${file.filename}`;
     return { path };
+  }
+
+  @Get('avatars/:filename')
+  serveAvatar(@Param('filename') filename: string, @Res() res: Response) {
+    const filePath = join(__dirname, '..', '..', 'uploads', 'avatars', filename);
+    return res.sendFile(filePath, (err) => {
+      if (err) {
+        throw new NotFoundException('Avatar no encontrado');
+      }
+    });
   }
 }
 

@@ -69,3 +69,9 @@ Thumbs.db
 !.vscode/launch.json
 !.vscode/extensions.json
 
+
+#############################
+# Archivos 
+#############################
+
+/uploads

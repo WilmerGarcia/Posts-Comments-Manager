@@ -22,7 +22,9 @@ export class PostsService {
     if (!createPostDtos?.length) return [];
     // insertMany en una sola vuelta a la BD
     const created = await this.postModel.insertMany(createPostDtos);
-    return created;
+    // insertMany devuelve documentos de mongoose; para el contrato del servicio
+    // nos basta con devolverlos tipados como Post
+    return created as unknown as Post[];
   }
 
   async findAll(pagination?: PaginationDto): Promise<PaginatedResponse<Post>> {

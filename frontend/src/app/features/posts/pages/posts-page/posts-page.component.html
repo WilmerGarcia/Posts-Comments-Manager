@@ -1,0 +1,305 @@
+<div class="posts-page">
+  <header class="posts-header">
+    <div class="posts-header-inner">
+      <a routerLink="/posts" class="posts-logo">
+        <span class="posts-logo-icon">PCM</span>
+        <div class="posts-logo-text">
+          <span class="posts-logo-title">Posts &amp; Comments</span>
+          <span class="posts-logo-subtitle">Manager</span>
+        </div>
+      </a>
+
+      <div class="posts-header-actions">
+        @if (auth.currentUser; as user) {
+          <div class="posts-user-menu">
+            <button
+              type="button"
+              class="posts-user-toggle btn-secondary text-sm py-2"
+              (click)="toggleUserMenu()"
+            >
+              <div class="posts-user">
+                <span class="posts-user-name">{{ user.name }}</span>
+              </div>
+              <span class="posts-user-chevron" aria-hidden="true">▾</span>
+            </button>
+
+            @if (userMenuOpen) {
+              <div class="posts-user-dropdown">
+                <a routerLink="/account" class="posts-user-dropdown-item" (click)="toggleUserMenu()">
+                  Mi cuenta
+                </a>
+                <button
+                  type="button"
+                  class="posts-user-dropdown-item posts-user-dropdown-item-danger"
+                  (click)="logout()"
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <a routerLink="/auth" class="btn-primary text-sm py-2">
+            Iniciar sesión
+          </a>
+        }
+      </div>
+    </div>
+  </header>
+
+  <main class="posts-main">
+    <section class="posts-hero">
+      <div>
+        <h1 class="posts-hero-title">Posts</h1>
+        <p class="posts-hero-subtitle">
+          Explora las publicaciones de la comunidad o crea las tuyas.
+        </p>
+      </div>
+
+      <div class="posts-toolbar-main">
+        @if (auth.currentUser) {
+          <div class="posts-toolbar-top">
+            <div class="posts-view-toggle">
+              <button
+                type="button"
+                class="posts-filter"
+                [class.active]="view === 'feed'"
+                (click)="setView('feed')"
+              >
+                Lista de posts
+              </button>
+              <button
+                type="button"
+                class="posts-filter"
+                [class.active]="view === 'mine'"
+                (click)="setView('mine')"
+              >
+                Mis posts
+              </button>
+            </div>
+            <button type="button" class="btn-primary posts-toolbar-new" (click)="openCreateForm()">
+              <span class="inline-flex items-center gap-2">
+                <span class="text-lg leading-none">+</span>
+                <span>Nuevo post</span>
+              </span>
+            </button>
+          </div>
+        }
+
+        <div class="posts-toolbar-bottom">
+          <label for="search" class="posts-filter-label">Buscar</label>
+          <div class="posts-search-wrapper">
+            <input
+              id="search"
+              type="search"
+              class="posts-filter-select posts-filter-input"
+              placeholder="Por título..."
+              [ngModel]="search()"
+              (ngModelChange)="onSearchChange($event)"
+            />
+          </div>
+        </div>
+      </div>
+
+      @if (showCreateForm) {
+        <div class="posts-create-modal-backdrop" (click)="closeCreateForm()">
+          <div class="posts-create-modal card" (click)="$event.stopPropagation()">
+            <div class="posts-create-modal-header">
+              <h2 class="posts-create-title">Nuevo post</h2>
+              <button type="button" class="posts-create-close" (click)="closeCreateForm()">
+                <app-icon-close />
+              </button>
+            </div>
+            <form
+              [formGroup]="createForm"
+              (ngSubmit)="submitCreate()"
+              class="posts-create-form"
+            >
+              <div class="detail-field">
+                <label for="create-title" class="detail-label">Título</label>
+                <input
+                  id="create-title"
+                  type="text"
+                  formControlName="title"
+                  class="input-field"
+                  placeholder="Título del post (mín. 3 caracteres)"
+                />
+                @if (createForm.get('title')?.invalid && createForm.get('title')?.touched) {
+                  <span class="detail-error">Mínimo 3 caracteres</span>
+                }
+              </div>
+              <div class="detail-field">
+                <label for="create-body" class="detail-label">Contenido</label>
+                <textarea
+                  id="create-body"
+                  formControlName="body"
+                  class="input-field min-h-[140px] resize-y"
+                  placeholder="Escribe el contenido (mín. 10 caracteres)"
+                  rows="5"
+                ></textarea>
+                @if (createForm.get('body')?.invalid && createForm.get('body')?.touched) {
+                  <span class="detail-error">Mínimo 10 caracteres</span>
+                }
+              </div>
+              <div class="detail-field">
+                <label for="create-author" class="detail-label">Autor</label>
+                <input
+                  id="create-author"
+                  type="text"
+                  formControlName="author"
+                  class="input-field"
+                  placeholder="Nombre del autor"
+                />
+                @if (createForm.get('author')?.invalid && createForm.get('author')?.touched) {
+                  <span class="detail-error">Requerido</span>
+                }
+              </div>
+              <div class="detail-field">
+                <label for="create-images" class="detail-label">
+                  Imágenes (opcional)
+                  <span class="detail-label-hint">Se guardan en el backend</span>
+                </label>
+                <input
+                  id="create-images"
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  (change)="onImagesSelected($event)"
+                  class="input-file"
+                />
+                <p class="posts-create-images-hint">
+                  Puedes seleccionar varias imágenes.
+                </p>
+                @if (selectedImagesNames.length) {
+                  <ul class="posts-create-images-list">
+                    @for (name of selectedImagesNames; track name) {
+                      <li class="posts-create-images-item">{{ name }}</li>
+                    }
+                  </ul>
+                }
+              </div>
+              <div class="posts-create-actions">
+                <button type="button" class="btn-secondary" (click)="closeCreateForm()">
+                  Cancelar
+                </button>
+                <button type="submit" class="btn-primary" [disabled]="creating">
+                  {{ creating ? 'Creando…' : 'Crear post' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      }
+
+      @if (showDeleteModal && postToDelete) {
+        <div class="posts-create-modal-backdrop" (click)="cancelDeletePost()">
+          <div class="posts-create-modal card" (click)="$event.stopPropagation()">
+            <div class="posts-create-modal-header">
+              <h2 class="posts-create-title">Eliminar post</h2>
+              <button type="button" class="posts-create-close" (click)="cancelDeletePost()">
+                ✕
+              </button>
+            </div>
+            <p class="posts-create-subtitle">
+              ¿Seguro que deseas eliminar el post "{{ postToDelete.title }}"?
+            </p>
+            <div class="posts-create-actions">
+              <button type="button" class="btn-secondary" (click)="cancelDeletePost()">
+                Cancelar
+              </button>
+              <button
+                type="button"
+                class="btn-chip-danger"
+                (click)="confirmDeletePost()"
+                [disabled]="deletingId === postToDelete._id"
+              >
+                {{ deletingId === postToDelete._id ? 'Eliminando…' : 'Eliminar' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </section>
+
+    <section class="posts-list">
+      @if (loading) {
+        <div class="posts-loading">
+          <span class="posts-loading-dot"></span>
+          <span class="posts-loading-dot"></span>
+          <span class="posts-loading-dot"></span>
+          <span class="text-stone-500 text-sm ml-3">Cargando posts…</span>
+        </div>
+      }
+
+      @if (error) {
+        <div class="posts-error" role="alert">
+          {{ error }}
+        </div>
+      }
+
+      @if (!loading && !error && displayedPosts().length === 0) {
+        <div class="posts-empty">
+          <p class="posts-empty-title">No hay posts todavía</p>
+          <p class="posts-empty-text">Las publicaciones aparecerán aquí cuando se creen.</p>
+        </div>
+      }
+
+      <div class="posts-grid">
+        @for (post of displayedPosts(); track post._id) {
+          <article class="posts-card card">
+            <header class="posts-card-header">
+              <h2 class="posts-card-title">{{ post.title }}</h2>
+              <span
+                class="posts-card-badge"
+                [ngClass]="statusClass(post.status)"
+              >
+                {{ statusLabel(post.status) }}
+              </span>
+            </header>
+            @if (post.images?.length) {
+              <div class="posts-card-images">
+                <img [src]="imageUrl(post.images?.[0])" alt="" class="posts-card-thumb" />
+              </div>
+            }
+            <p class="posts-card-body">{{ post.body }}</p>
+            <footer class="posts-card-footer">
+              <span class="posts-card-author">por {{ post.author }}</span>
+              <span class="posts-card-date">{{ formatDate(post.createdAt) }}</span>
+            </footer>
+            <div class="posts-card-actions">
+              <button type="button" class="btn-ver" (click)="goToDetail(post)">
+                <span class="inline-flex items-center gap-1">
+                  <app-icon-eye />
+                  <span>Ver</span>
+                </span>
+              </button>
+              @if (isOwner(post)) {
+                <button
+                  type="button"
+                  class="btn-chip-success"
+                  (click)="goToEdit(post, $event)"
+                >
+                  <span class="inline-flex items-center gap-1">
+                    <app-icon-edit />
+                    <span>Editar</span>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  class="btn-chip-danger"
+                  (click)="deletePost(post, $event)"
+                  [disabled]="deletingId === post._id"
+                >
+                  <span class="inline-flex items-center gap-1">
+                    <app-icon-trash />
+                    <span>{{ deletingId === post._id ? 'Eliminando…' : 'Eliminar' }}</span>
+                  </span>
+                </button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  </main>
+</div>

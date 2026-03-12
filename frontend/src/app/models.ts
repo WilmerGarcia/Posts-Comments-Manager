@@ -1,7 +1,6 @@
 /** Estados de un post. Debe coincidir con el backend. */
 export const POST_STATUS = {
   CREADO: 'CREADO',
-  VERIFICADO: 'VERIFICADO',
   PUBLICADO: 'PUBLICADO',
 } as const;
 
@@ -12,6 +11,8 @@ export interface Post {
   title: string;
   body: string;
   author: string;
+  /** ID del usuario que realmente creó el post (para permisos y "mis posts") */
+  createdByUserId?: string;
   status?: PostStatus;
   images?: string[];
   createdAt?: string;
@@ -25,15 +26,13 @@ export interface Comment {
   email: string;
   body: string;
   createdAt?: string;
+   avatar?: string;
 }
-
-export type UserRole = 'admin' | 'user';
 
 export interface AuthUser {
   id: string;
   email: string;
   name?: string;
-  role: UserRole;
   token: string;
   avatar?: string;
 }

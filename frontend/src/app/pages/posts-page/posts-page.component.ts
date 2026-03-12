@@ -14,7 +14,6 @@ type FilterStatus = PostStatus | 'TODOS';
 const FILTER_OPTIONS: { value: FilterStatus; label: string }[] = [
   { value: 'TODOS', label: 'Todos' },
   { value: POST_STATUS.CREADO, label: 'Creados' },
-  { value: POST_STATUS.VERIFICADO, label: 'Verificados' },
   { value: POST_STATUS.PUBLICADO, label: 'Publicados' },
 ];
 
@@ -35,6 +34,7 @@ export class PostsPageComponent implements OnInit {
   creating = false;
   selectedImagesFiles: File[] = [];
   selectedImagesNames: string[] = [];
+  userMenuOpen = false;
 
   readonly filterOptions = FILTER_OPTIONS;
 
@@ -80,23 +80,31 @@ export class PostsPageComponent implements OnInit {
   }
 
   logout() {
+    this.userMenuOpen = false;
     this.auth.logout();
+  }
+
+  toggleUserMenu() {
+    this.userMenuOpen = !this.userMenuOpen;
   }
 
   filteredPosts(): Post[] {
     const current = this.auth.currentUser;
-    const isAdmin = current?.role === 'admin';
-
     let list = this.posts;
-
-    if (!isAdmin) {
-      list = list.filter((p) => (p.status ?? POST_STATUS.CREADO) === POST_STATUS.PUBLICADO);
-    }
+    // Timeline pública: solo posts publicados
+    list = list.filter(
+      (p) => (p.status ?? POST_STATUS.CREADO) === POST_STATUS.PUBLICADO,
+    );
 
     if (this.view === 'mine' && current) {
-      list = list.filter(
-        (p) => p.author === current.name || p.author === current.email,
-      );
+      list = list.filter((p) => {
+        // Si el post tiene información del creador, usamos el id del usuario autenticado
+        if (p.createdByUserId) {
+          return p.createdByUserId === current.id;
+        }
+        // Compatibilidad hacia atrás: posts antiguos sin createdBy usan el author
+        return p.author === current.name || p.author === current.email;
+      });
     }
 
     if (this.filter === 'TODOS') {
@@ -108,8 +116,6 @@ export class PostsPageComponent implements OnInit {
 
   statusLabel(status?: PostStatus): string {
     switch (status) {
-      case POST_STATUS.VERIFICADO:
-        return 'Verificado';
       case POST_STATUS.PUBLICADO:
         return 'Publicado';
       case POST_STATUS.CREADO:
@@ -120,8 +126,6 @@ export class PostsPageComponent implements OnInit {
 
   statusClass(status?: PostStatus): string {
     switch (status) {
-      case POST_STATUS.VERIFICADO:
-        return 'bg-amber-100 text-amber-800 border-amber-200';
       case POST_STATUS.PUBLICADO:
         return 'bg-emerald-100 text-emerald-800 border-emerald-200';
       case POST_STATUS.CREADO:
@@ -164,12 +168,14 @@ export class PostsPageComponent implements OnInit {
       return;
     }
 
-    const author = this.auth.currentUser.name || this.auth.currentUser.email;
+    const user = this.auth.currentUser;
+    const author = user.name || user.email;
 
     const dtoBase: Omit<CreatePostDto, 'images'> = {
       title: this.createForm.getRawValue().title,
       body: this.createForm.getRawValue().body,
       author,
+      createdByUserId: user.id,
     };
 
     this.creating = true;

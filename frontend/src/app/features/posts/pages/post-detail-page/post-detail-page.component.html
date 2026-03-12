@@ -1,0 +1,225 @@
+<div class="detail-page">
+  <div class="detail-inner">
+    <a routerLink="/posts" class="detail-back">
+      <span class="detail-back-icon" aria-hidden="true">←</span>
+      Volver a la lista
+    </a>
+
+    @if (post; as p) {
+      <article class="detail-article card">
+        <header class="detail-article-header">
+          <div class="detail-article-meta">
+            <h1 class="detail-article-title">{{ p.title }}</h1>
+            <p class="detail-article-author">por {{ p.author }}</p>
+          </div>
+          <div class="detail-article-status">
+            <span class="detail-badge" [ngClass]="statusBadgeClass(p.status)">
+              {{ statusLabel(p.status) }}
+            </span>
+            @if (canPublish()) {
+              <button
+                type="button"
+                class="btn-primary detail-publish-btn"
+                (click)="publishPost()"
+              >
+                Publicar post
+              </button>
+            }
+          </div>
+        </header>
+        <div class="detail-article-body">
+          {{ p.body }}
+        </div>
+        @if (p.images?.length) {
+          <div class="detail-article-images">
+            @for (img of p.images; track img) {
+              <img [src]="imageUrl(img)" alt="" class="detail-article-img" />
+            }
+          </div>
+        }
+      </article>
+
+      <section class="detail-comments">
+        <h2 class="detail-comments-title">Comentarios</h2>
+
+        @if (!auth.isLoggedIn) {
+          <div class="detail-comments-disabled">
+            Para comentar debes iniciar sesión.
+            <a routerLink="/auth" class="detail-back link-login">Iniciar sesión</a>
+          </div>
+        } @else if (!canComment()) {
+          <div class="detail-comments-disabled">
+            Los comentarios se habilitan cuando el post ha sido publicado.
+          </div>
+        }
+
+        <div class="detail-comments-list">
+          @if (loadingComments) {
+            <p class="detail-loading">Cargando comentarios…</p>
+          }
+          @if (!loadingComments && comments.length === 0) {
+            <div class="detail-no-comments">
+              Aún no hay comentarios.
+            </div>
+          }
+          @for (comment of comments; track comment._id) {
+            <article class="detail-comment card">
+              <header class="detail-comment-header">
+                <div class="detail-comment-user">
+                  <div class="detail-avatar" aria-hidden="true">
+                    @if (comment.avatar && imageUrl(comment.avatar); as avatarSrc) {
+                      <img
+                        [src]="avatarSrc"
+                        alt="Avatar de {{ comment.name }}"
+                        class="detail-avatar-img"
+                      />
+                    } @else {
+                      <span class="detail-avatar-initials">
+                        {{ comment.name[0] | uppercase }}
+                      </span>
+                    }
+                  </div>
+                  <div>
+                    <strong class="detail-comment-name">{{ comment.name }}</strong>
+                  </div>
+                </div>
+                @if (isCommentOwner(comment)) {
+                  <div class="detail-comment-actions">
+                    <button
+                      type="button"
+                      class="btn-chip-success"
+                      (click)="startEditComment(comment)"
+                    >
+                      <app-icon-edit />
+                      <span>Editar</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-chip-danger"
+                      (click)="deleteComment(comment)"
+                    >
+                      <app-icon-trash />
+                      <span>Eliminar</span>
+                    </button>
+                  </div>
+                }
+              </header>
+              @if (editingCommentId === comment._id) {
+                <div class="detail-field mt-2">
+                  <label class="detail-label sr-only" for="edit-comment-body-{{ comment._id }}">
+                    Editar comentario
+                  </label>
+                  <textarea
+                    id="edit-comment-body-{{ comment._id }}"
+                    [(ngModel)]="editingBody"
+                    class="input-field min-h-[80px] resize-y"
+                    rows="3"
+                  ></textarea>
+                  <div class="detail-form-footer mt-2">
+                    <button
+                      type="button"
+                      class="btn-secondary text-xs mr-2"
+                      (click)="cancelEditComment()"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-primary text-xs"
+                      [disabled]="savingComment"
+                      (click)="saveEditComment(comment)"
+                    >
+                      {{ savingComment ? 'Guardando…' : 'Guardar cambios' }}
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <p class="detail-comment-body">{{ comment.body }}</p>
+              }
+            </article>
+          }
+        </div>
+
+        @if (showDeleteCommentModal && commentToDelete) {
+          <div class="detail-modal-backdrop" (click)="cancelDeleteCommentConfirm()">
+            <div class="detail-modal card" (click)="$event.stopPropagation()">
+              <h3 class="detail-modal-title">Eliminar comentario</h3>
+              <p class="detail-modal-text">
+                ¿Seguro que deseas eliminar este comentario?
+              </p>
+              <div class="detail-modal-actions">
+                <button
+                  type="button"
+                  class="btn-secondary"
+                  (click)="cancelDeleteCommentConfirm()"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  class="btn-chip-danger"
+                  (click)="confirmDeleteComment()"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (canComment()) {
+          <form
+            [formGroup]="commentForm"
+            (ngSubmit)="submitComment()"
+            class="detail-comment-form card"
+          >
+            <div class="detail-form-row">
+              <div class="detail-field">
+                <label class="detail-label">Comentando como</label>
+                <div class="detail-user-inline">
+                  <div class="detail-avatar" aria-hidden="true">
+                    <span class="detail-avatar-initials">
+                      {{ (auth.currentUser?.name || auth.currentUser?.email || '?')[0]
+                      | uppercase }}
+                    </span>
+                  </div>
+                  <div class="detail-user-meta">
+                    <span class="detail-user-name">
+                      {{ auth.currentUser?.name || auth.currentUser?.email }}
+                    </span>
+                    <span class="detail-user-email">
+                      {{ auth.currentUser?.email }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="detail-field">
+              <label for="comment-body" class="detail-label">Comentario</label>
+              <textarea
+                id="comment-body"
+                formControlName="body"
+                class="input-field min-h-[100px] resize-y"
+                placeholder="Escribe tu comentario…"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="detail-form-footer">
+              <p class="detail-form-hint">Comentarios respetuosos y relacionados con el contenido.</p>
+              <button type="submit" class="btn-primary" [disabled]="savingComment">
+                @if (savingComment) { Guardando… } @else { Publicar comentario }
+              </button>
+            </div>
+          </form>
+        }
+      </section>
+    }
+
+    @if (!post && !loadingPost && error) {
+      <div class="detail-error" role="alert">{{ error }}</div>
+    }
+    @if (loadingPost) {
+      <div class="detail-loading">Cargando post…</div>
+    }
+  </div>
+</div>

@@ -1,17 +1,18 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Delete, Query, Patch } from '@nestjs/common';
+import { ApiOperation, ApiTags, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsMongoId, IsOptional } from 'class-validator';
 import { ParseObjectIdPipe } from '../common/pipes/parse-object-id.pipe';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
+
+class CommentsQueryDto extends PaginationDto {
+  @ApiPropertyOptional({ description: 'ID del post para filtrar comentarios' })
+  @IsOptional()
+  @IsMongoId()
+  postId?: string;
+}
 
 @ApiTags('comments')
 @Controller('comments')
@@ -21,9 +22,9 @@ export class CommentsController {
   @Get()
   @ApiOperation({ summary: 'Listar por post: GET /comments?postId={id}' })
   findComments(
-    @Query('postId') postId: string | undefined,
-    @Query() pagination: PaginationDto,
+    @Query() query: CommentsQueryDto,
   ) {
+    const { postId, ...pagination } = query;
     // Si viene postId en query, listar solo los de ese post; si no, todos (paginado)
     if (postId) {
       const validId = new ParseObjectIdPipe().transform(postId);
@@ -36,6 +37,15 @@ export class CommentsController {
   @ApiOperation({ summary: 'Crear comentario' })
   create(@Body() createCommentDto: CreateCommentDto) {
     return this.commentsService.create(createCommentDto);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Actualizar un comentario' })
+  update(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Body() updateCommentDto: UpdateCommentDto,
+  ) {
+    return this.commentsService.update(id, updateCommentDto);
   }
 
   @Delete(':id')

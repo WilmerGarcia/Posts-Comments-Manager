@@ -30,8 +30,11 @@
               type="text"
               formControlName="name"
               class="input-field"
-              placeholder="Tu nombre (opcional)"
+              placeholder="Tu nombre"
             />
+            @if (form.get('name')?.invalid && form.get('name')?.touched) {
+              <p class="auth-error">El nombre es obligatorio.</p>
+            }
           </div>
         }
 

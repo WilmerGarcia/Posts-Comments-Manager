@@ -74,18 +74,14 @@ export class PostDetailPageComponent implements OnInit {
   }
 
   canVerify(): boolean {
-    return (
-      !!this.post &&
-      this.post.status === POST_STATUS.CREADO &&
-      this.auth.currentUser?.role === 'admin'
-    );
+    return false;
   }
 
   canPublish(): boolean {
     return (
       !!this.post &&
-      this.post.status === POST_STATUS.VERIFICADO &&
-      this.auth.currentUser?.role === 'admin'
+      this.post.status === POST_STATUS.CREADO &&
+      this.auth.isLoggedIn
     );
   }
 
@@ -99,8 +95,6 @@ export class PostDetailPageComponent implements OnInit {
 
   statusLabel(status?: PostStatus): string {
     switch (status) {
-      case POST_STATUS.VERIFICADO:
-        return 'Verificado';
       case POST_STATUS.PUBLICADO:
         return 'Publicado';
       case POST_STATUS.CREADO:
@@ -111,8 +105,6 @@ export class PostDetailPageComponent implements OnInit {
 
   statusBadgeClass(status?: PostStatus): string {
     switch (status) {
-      case POST_STATUS.VERIFICADO:
-        return 'badge-verified';
       case POST_STATUS.PUBLICADO:
         return 'badge-published';
       case POST_STATUS.CREADO:
@@ -124,12 +116,11 @@ export class PostDetailPageComponent implements OnInit {
   statusDescription(status?: PostStatus): string {
     switch (status) {
       case POST_STATUS.CREADO:
-      default:
-        return 'Pendiente de revisión por un administrador.';
-      case POST_STATUS.VERIFICADO:
-        return 'Revisado por un administrador, listo para publicar.';
+        return 'Borrador creado, pendiente de publicar.';
       case POST_STATUS.PUBLICADO:
         return 'Visible para todos y abierto a comentarios.';
+      default:
+        return '';
     }
   }
 

@@ -1,0 +1,124 @@
+<div class="edit-page">
+  <div class="edit-inner">
+    <a routerLink="/posts" class="edit-back">← Volver a la lista</a>
+
+    @if (loading) {
+      <p class="edit-loading">Cargando…</p>
+    }
+
+    @if (error) {
+      <div class="edit-error" role="alert">{{ error }}</div>
+    }
+
+    @if (post && !loading) {
+      <h1 class="edit-title">Editar post</h1>
+      <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="edit-form card">
+        <div class="detail-field">
+          <label for="edit-title" class="detail-label">Título</label>
+          <input
+            id="edit-title"
+            type="text"
+            formControlName="title"
+            class="input-field"
+            placeholder="Título (mín. 3 caracteres)"
+          />
+          @if (editForm.get('title')?.invalid && editForm.get('title')?.touched) {
+            <span class="detail-error">Mínimo 3 caracteres</span>
+          }
+        </div>
+        <div class="detail-field">
+          <label for="edit-body" class="detail-label">Contenido</label>
+          <textarea
+            id="edit-body"
+            formControlName="body"
+            class="input-field min-h-[140px] resize-y"
+            placeholder="Contenido (mín. 10 caracteres)"
+            rows="5"
+          ></textarea>
+          @if (editForm.get('body')?.invalid && editForm.get('body')?.touched) {
+            <span class="detail-error">Mínimo 10 caracteres</span>
+          }
+        </div>
+        <div class="detail-field">
+          <label for="edit-author" class="detail-label">Autor</label>
+          <input
+            id="edit-author"
+            type="text"
+            formControlName="author"
+            class="input-field"
+            placeholder="Autor"
+          />
+          @if (editForm.get('author')?.invalid && editForm.get('author')?.touched) {
+            <span class="detail-error">Requerido</span>
+          }
+        </div>
+        <div class="detail-field">
+          <label for="edit-status" class="detail-label">Estado</label>
+          <select
+            id="edit-status"
+            formControlName="status"
+            class="input-field"
+          >
+            <option [ngValue]="POST_STATUS.CREADO">Creado (borrador)</option>
+            <option [ngValue]="POST_STATUS.PUBLICADO">Publicado</option>
+          </select>
+        </div>
+
+        <div class="detail-field">
+          <label class="detail-label">Imágenes del post</label>
+
+          @if (existingImages.length) {
+            <div class="posts-card-images mb-3">
+              <div class="flex flex-wrap gap-3">
+                @for (img of existingImages; track img) {
+                  <div class="flex flex-col items-start gap-1">
+                    <img
+                      [src]="imageUrl(img)"
+                      alt=""
+                      class="posts-card-thumb max-w-[140px] max-h-[120px] object-cover border rounded"
+                    />
+                    <button
+                      type="button"
+                      class="btn-chip-danger"
+                      (click)="removeExistingImage(img)"
+                      aria-label="Quitar imagen"
+                    >
+                      <app-icon-trash />
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <label for="edit-images" class="detail-label mt-2">
+            Añadir nuevas imágenes (opcional)
+          </label>
+          <input
+            id="edit-images"
+            type="file"
+            multiple
+            accept="image/*"
+            (change)="onImagesSelected($event)"
+            class="input-file"
+          />
+          @if (selectedImagesNames.length) {
+            <ul class="posts-create-images-list mt-2">
+              @for (name of selectedImagesNames; track name) {
+                <li class="posts-create-images-item">{{ name }}</li>
+              }
+            </ul>
+          }
+        </div>
+        <div class="edit-actions">
+          <button type="button" class="btn-secondary" (click)="cancel()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="saving">
+            {{ saving ? 'Guardando…' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

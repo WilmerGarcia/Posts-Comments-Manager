@@ -1,6 +1,5 @@
 export const POST_STATUS = {
   CREADO: 'CREADO',
-  VERIFICADO: 'VERIFICADO',
   PUBLICADO: 'PUBLICADO',
 } as const;
 
