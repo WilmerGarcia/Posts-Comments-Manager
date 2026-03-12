@@ -100,6 +100,13 @@
 .account-avatar-input {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+
+  // Evitar que el texto nativo del input file se salga en responsive
+  input.input-file {
+    max-width: 100%;
+    display: block;
+  }
 }
 
 .account-form {
@@ -131,6 +138,18 @@
 
   .account-page {
     padding-top: 1.5rem;
+  }
+}
+
+// En pantallas muy estrechas, apilar avatar e input para que "Ningún archivo seleccionado" no se salga
+@media (max-width: 480px) {
+  .account-avatar-block {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .account-avatar-input {
+    width: 100%;
   }
 }
 
