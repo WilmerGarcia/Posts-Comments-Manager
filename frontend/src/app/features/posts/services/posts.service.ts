@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { map, Observable, tap } from 'rxjs';
+import { delay, map, Observable, retry, tap } from 'rxjs';
 import { Comment, Post, PostStatus } from '../../../models';
 import { environment } from '../../../../environments/environment';
 
@@ -67,6 +67,8 @@ export class PostsService {
     return this.http
       .get<ApiSuccess<BackendPaginated<Post>>>(`${environment.apiUrl}/posts`, { params })
       .pipe(
+        delay(200),
+        retry(1),
         map((res) => ({
           items: res.data.data,
           total: res.data.total,

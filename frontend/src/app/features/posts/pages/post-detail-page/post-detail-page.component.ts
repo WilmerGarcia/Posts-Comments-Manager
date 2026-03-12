@@ -45,7 +45,6 @@ export class PostDetailPageComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Uso obligatorio de switchMap (requisito 2.4 RxJS): cargar post al cambiar el id en la ruta
     this.route.paramMap
       .pipe(
         tap(() => {
