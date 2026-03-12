@@ -49,16 +49,45 @@
 
   <main class="posts-main">
     <section class="posts-hero">
-      <div>
-        <h1 class="posts-hero-title">Posts</h1>
-        <p class="posts-hero-subtitle">
-          Explora las publicaciones de la comunidad o crea las tuyas.
-        </p>
+      <div class="posts-hero-head">
+        <div class="posts-hero-text">
+          <h1 class="posts-hero-title">Posts</h1>
+          <p class="posts-hero-subtitle">
+            Gestiona y explora publicaciones.
+          </p>
+        </div>
+        @if (auth.currentUser) {
+          <div class="posts-hero-actions">
+            <button
+              type="button"
+              class="btn-primary posts-toolbar-new"
+              (click)="openCreateForm()"
+            >
+              <span class="inline-flex items-center gap-2">
+                <span class="text-lg leading-none">+</span>
+                <span>Nuevo post</span>
+              </span>
+            </button>
+          </div>
+        }
       </div>
 
-      <div class="posts-toolbar-main">
-        @if (auth.currentUser) {
-          <div class="posts-toolbar-top">
+      <div class="posts-toolbar-card card">
+        <div class="posts-toolbar-row">
+          <div class="posts-search-cell">
+            <label for="search" class="posts-filter-label">Buscar</label>
+            <div class="posts-search-wrapper">
+              <input
+                id="search"
+                type="search"
+                class="posts-filter-select posts-filter-input"
+                placeholder="Buscar por título..."
+                [ngModel]="search()"
+                (ngModelChange)="onSearchChange($event)"
+              />
+            </div>
+          </div>
+          @if (auth.currentUser) {
             <div class="posts-view-toggle">
               <button
                 type="button"
@@ -76,28 +105,23 @@
               >
                 Mis posts
               </button>
+              <button
+                type="button"
+                class="posts-filter"
+                [class.active]="showBulkForm"
+                (click)="openBulkForm()"
+              >
+                Carga masiva
+              </button>
             </div>
-            <button type="button" class="btn-primary posts-toolbar-new" (click)="openCreateForm()">
-              <span class="inline-flex items-center gap-2">
-                <span class="text-lg leading-none">+</span>
-                <span>Nuevo post</span>
-              </span>
-            </button>
-          </div>
-        }
-
-        <div class="posts-toolbar-bottom">
-          <label for="search" class="posts-filter-label">Buscar</label>
-          <div class="posts-search-wrapper">
-            <input
-              id="search"
-              type="search"
-              class="posts-filter-select posts-filter-input"
-              placeholder="Por título..."
-              [ngModel]="search()"
-              (ngModelChange)="onSearchChange($event)"
-            />
-          </div>
+          }
+        </div>
+        <div class="posts-metrics">
+          <span class="posts-metrics-total">{{ totalPostsCount() }} publicaciones</span>
+          @if (auth.currentUser && myPostsCount() > 0) {
+            <span class="posts-metrics-sep">·</span>
+            <span class="posts-metrics-mine">{{ myPostsCount() }} creadas por mí</span>
+          }
         </div>
       </div>
 
@@ -220,6 +244,7 @@
       }
     </section>
 
+    @if (!showBulkForm) {
     <section class="posts-list">
       @if (loading) {
         <div class="posts-loading">
@@ -302,5 +327,39 @@
         }
       </div>
     </section>
+    }
+
+    @if (showBulkForm) {
+    <div class="posts-create-modal-backdrop" (click)="closeBulkForm()">
+      <div class="posts-create-modal posts-bulk-modal card" (click)="$event.stopPropagation()">
+        <div class="posts-create-modal-header">
+          <h2 class="posts-create-title">Carga masiva de posts</h2>
+          <button type="button" class="posts-create-close" (click)="closeBulkForm()">
+            <app-icon-close />
+          </button>
+        </div>
+        <p class="posts-create-subtitle mb-4 text-sm text-stone-500">
+          Pega un array JSON de posts con las propiedades
+          <code>title</code>, <code>body</code>, opcionalmente <code>author</code> y
+          <code>status</code> (CREADO o PUBLICADO). Ejemplo:
+        </p>
+        <pre class="posts-bulk-example text-xs bg-stone-900 text-stone-100 p-3 rounded mb-4 overflow-auto">{{ bulkExampleJson }}</pre>
+        <textarea
+          [(ngModel)]="bulkJson"
+          rows="10"
+          class="input-field w-full resize-y"
+          placeholder="Pega aquí el array JSON de posts"
+        ></textarea>
+        <div class="posts-create-actions mt-4">
+          <button type="button" class="btn-secondary" (click)="closeBulkForm()">
+            Cancelar
+          </button>
+          <button type="button" class="btn-primary" (click)="submitBulkCreate()" [disabled]="bulkCreating">
+            {{ bulkCreating ? 'Creando...' : 'Crear posts' }}
+          </button>
+        </div>
+      </div>
+    </div>
+    }
   </main>
 </div>

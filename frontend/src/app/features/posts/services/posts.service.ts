@@ -85,6 +85,12 @@ export class PostsService {
       .pipe(map((res) => res.data));
   }
 
+  createPostBulk(posts: CreatePostDto[]): Observable<Post[]> {
+    return this.http
+      .post<ApiSuccess<Post[]>>(`${environment.apiUrl}/posts/bulk`, { posts })
+      .pipe(map((res) => res.data));
+  }
+
   createPost(dto: CreatePostDto): Observable<Post> {
     return this.http
       .post<ApiSuccess<Post>>(`${environment.apiUrl}/posts`, dto)

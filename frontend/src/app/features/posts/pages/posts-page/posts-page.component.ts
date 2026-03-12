@@ -72,17 +72,37 @@ export class PostsPageComponent implements OnInit {
     return result;
   });
 
+  /** Total de publicaciones cargadas */
+  totalPostsCount = computed(() => this.posts().length);
+
+  /** Cuántas publicaciones son del usuario actual */
+  myPostsCount = computed(() => {
+    const user = this.auth.currentUser;
+    if (!user) return 0;
+    return this.posts().filter((p) => {
+      if (p.createdByUserId) return p.createdByUserId === user.id;
+      return p.author === user.name || p.author === user.email;
+    }).length;
+  });
+
   loading = false;
   error: string | null = null;
   view: 'feed' | 'mine' = 'feed';
   showCreateForm = false;
+  showBulkForm = false;
   creating = false;
+  bulkCreating = false;
   selectedImagesFiles: File[] = [];
   selectedImagesNames: string[] = [];
   deletingId: string | null = null;
   showDeleteModal = false;
   postToDelete: Post | null = null;
   userMenuOpen = false;
+  bulkJson = '';
+
+  /** Example JSON for bulk create (avoids literal braces in template) */
+  bulkExampleJson =
+    '[{ "title": "Post 1", "body": "Contenido...", "author": "User 1", "status": "PUBLICADO" },\n { "title": "Post 2", "body": "Contenido...", "author": "User 2", "status": "CREADO" }]';
 
   /** Formulario reactivo: title min 3, body min 10, author requerido (requisito 2.2) */
   createForm = this.fb.nonNullable.group({
@@ -245,6 +265,16 @@ export class PostsPageComponent implements OnInit {
     this.selectedImagesNames = [];
   }
 
+  openBulkForm() {
+    this.showBulkForm = true;
+    this.bulkJson = '';
+  }
+
+  closeBulkForm() {
+    this.showBulkForm = false;
+    this.bulkJson = '';
+  }
+
   onImagesSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     const files = input.files;
@@ -307,6 +337,66 @@ export class PostsPageComponent implements OnInit {
         const msg =
           (err as { error?: { message?: string } })?.error?.message ??
           'No se pudieron subir las imágenes. Inténtalo de nuevo.';
+        this.toast.error(msg);
+      },
+    });
+  }
+
+  submitBulkCreate() {
+    const user = this.auth.currentUser;
+    if (!user) {
+      this.toast.error('Debes iniciar sesión para crear posts.');
+      return;
+    }
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(this.bulkJson);
+    } catch {
+      this.toast.error('El contenido no es un JSON válido.');
+      return;
+    }
+
+    let postsInput: unknown;
+    if (Array.isArray(parsed)) {
+      postsInput = parsed;
+    } else if (parsed && typeof parsed === 'object' && Array.isArray((parsed as { posts?: unknown }).posts)) {
+      postsInput = (parsed as { posts: unknown }).posts;
+    } else {
+      this.toast.error('Debe ser un array de posts o un objeto con la propiedad "posts".');
+      return;
+    }
+
+    const postsArray = (postsInput as unknown[]).map((item) => {
+      const obj = item as Partial<CreatePostDto>;
+      return {
+        title: obj.title ?? '',
+        body: obj.body ?? '',
+        author: obj.author ?? (this.auth.currentUser?.name || this.auth.currentUser?.email || ''),
+        createdByUserId: user.id,
+        images: obj.images ?? [],
+        status: obj.status,
+      } satisfies CreatePostDto;
+    });
+
+    if (postsArray.length === 0) {
+      this.toast.error('El array de posts está vacío.');
+      return;
+    }
+
+    this.bulkCreating = true;
+    this.postsService.createPostBulk(postsArray).subscribe({
+      next: () => {
+        this.bulkCreating = false;
+        this.closeBulkForm();
+        this.loadPosts();
+        this.toast.success('Posts creados correctamente.');
+      },
+      error: (err: unknown) => {
+        this.bulkCreating = false;
+        const msg =
+          (err as { error?: { message?: string } })?.error?.message ??
+          'No se pudieron crear los posts.';
         this.toast.error(msg);
       },
     });
