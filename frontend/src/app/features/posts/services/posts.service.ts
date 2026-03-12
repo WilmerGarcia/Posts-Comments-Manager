@@ -9,6 +9,7 @@ export interface PaginatedResponse<T> {
   total: number;
   page: number;
   limit: number;
+  totalPages: number;
 }
 
 interface ApiSuccess<T> {
@@ -74,6 +75,7 @@ export class PostsService {
           total: res.data.total,
           page: res.data.page,
           limit: res.data.limit,
+          totalPages: (res.data.totalPages ?? Math.ceil(res.data.total / res.data.limit)) || 1,
         })),
         tap(() => {}), // Uso obligatorio de tap (requisito 2.4)
       );

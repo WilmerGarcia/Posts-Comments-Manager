@@ -88,6 +88,12 @@ export class PostsPageComponent implements OnInit {
   loading = false;
   error: string | null = null;
   view: 'feed' | 'mine' = 'feed';
+
+  /** Paginación */
+  currentPage = 1;
+  totalPages = 1;
+  totalFromApi = 0;
+  readonly pageSize = 10;
   showCreateForm = false;
   showBulkForm = false;
   creating = false;
@@ -123,12 +129,15 @@ export class PostsPageComponent implements OnInit {
     this.loadPosts();
   }
 
-  loadPosts() {
+  loadPosts(page = 1) {
     this.loading = true;
     this.error = null;
-    this.postsService.getPosts().subscribe({
+    this.postsService.getPosts(page, this.pageSize).subscribe({
       next: (res: PaginatedResponse<Post>) => {
         this.posts.set(res.items ?? []);
+        this.currentPage = res.page;
+        this.totalPages = res.totalPages;
+        this.totalFromApi = res.total;
         this.loading = false;
       },
       error: () => {
@@ -138,15 +147,19 @@ export class PostsPageComponent implements OnInit {
     });
   }
 
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.loadPosts(page);
+  }
+
   onSearchChange(value: string) {
     this.search.set(value);
-    // Siempre recargamos desde el backend para tener datos frescos
-    this.loadPosts();
+    this.loadPosts(1);
   }
 
   setView(view: 'feed' | 'mine') {
     this.view = view;
-    this.loadPosts();
+    this.loadPosts(1);
   }
 
   goToDetail(post: Post) {
@@ -191,7 +204,7 @@ export class PostsPageComponent implements OnInit {
       next: () => {
         this.deletingId = null;
         this.toast.success('Post eliminado.');
-        this.loadPosts();
+        this.loadPosts(this.currentPage);
       },
       error: () => {
         this.deletingId = null;

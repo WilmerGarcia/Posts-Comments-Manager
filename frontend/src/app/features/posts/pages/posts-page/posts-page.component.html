@@ -117,7 +117,7 @@
           }
         </div>
         <div class="posts-metrics">
-          <span class="posts-metrics-total">{{ totalPostsCount() }} publicaciones</span>
+          <span class="posts-metrics-total">{{ totalFromApi }} publicaciones</span>
           @if (auth.currentUser && myPostsCount() > 0) {
             <span class="posts-metrics-sep">·</span>
             <span class="posts-metrics-mine">{{ myPostsCount() }} creadas por mí</span>
@@ -326,6 +326,32 @@
           </article>
         }
       </div>
+
+      @if (!loading && !error) {
+        <nav class="posts-pagination" aria-label="Paginación de posts">
+          <button
+            type="button"
+            class="posts-pagination-btn"
+            [disabled]="currentPage <= 1"
+            (click)="goToPage(currentPage - 1)"
+            aria-label="Página anterior"
+          >
+            Anterior
+          </button>
+          <span class="posts-pagination-info">
+            Página {{ currentPage }} de {{ totalPages }}
+          </span>
+          <button
+            type="button"
+            class="posts-pagination-btn"
+            [disabled]="currentPage >= totalPages"
+            (click)="goToPage(currentPage + 1)"
+            aria-label="Página siguiente"
+          >
+            Siguiente
+          </button>
+        </nav>
+      }
     </section>
     }
 

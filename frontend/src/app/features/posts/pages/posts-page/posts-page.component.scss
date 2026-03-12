@@ -546,6 +546,50 @@
   }
 }
 
+.posts-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+  padding: 1rem 0;
+  border-top: 1px solid #e7e5e4;
+}
+
+.posts-pagination-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1c1917;
+  background: #ffffff;
+  border: 1px solid #e7e5e4;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #f5f4f2;
+    border-color: #d6d3d1;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.posts-pagination-info {
+  font-size: 0.875rem;
+  color: #57534e;
+}
+
+.posts-pagination-total {
+  margin-left: 0.25rem;
+  color: #78716c;
+  font-size: 0.8125rem;
+}
+
 .posts-card {
   padding: 1.25rem 1.5rem;
   display: flex;
