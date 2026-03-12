@@ -54,22 +54,12 @@
 
 .auth-brand {
   text-align: center;
-}
 
-.auth-logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, #2563eb, #020617);
-  color: white;
-  font-weight: 700;
-  font-size: 1rem;
-  letter-spacing: -0.02em;
-  margin-bottom: 1.25rem;
-  box-shadow: 0 4px 14px rgb(37 99 235 / 0.35);
+  app-auth-logo-block {
+    display: inline-flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
 }
 
 .auth-title {

@@ -103,9 +103,9 @@ export class PostEditPageComponent implements OnInit {
       });
     };
 
-    // Si no hay nuevas imágenes seleccionadas, solo mandamos las existentes (posiblemente recortadas)
+    // Si no hay nuevas imágenes seleccionadas, enviamos la lista actual.
     if (this.selectedImagesFiles.length === 0) {
-      doUpdate(this.existingImages.length ? [...this.existingImages] : undefined);
+      doUpdate([...this.existingImages]);
       return;
     }
 

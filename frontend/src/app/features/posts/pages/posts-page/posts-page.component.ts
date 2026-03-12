@@ -12,6 +12,7 @@ import { IconEyeComponent } from '../../../../shared/icons/icon-eye.component';
 import { IconEditComponent } from '../../../../shared/icons/icon-edit.component';
 import { IconTrashComponent } from '../../../../shared/icons/icon-trash.component';
 import { IconCloseComponent } from '../../../../shared/icons/icon-close.component';
+import { IconLogoComponent } from '../../../../shared/icons/icon-logo.component';
 
 @Component({
   selector: 'app-posts-page',
@@ -25,6 +26,7 @@ import { IconCloseComponent } from '../../../../shared/icons/icon-close.componen
     IconEditComponent,
     IconTrashComponent,
     IconCloseComponent,
+    IconLogoComponent,
   ],
   templateUrl: './posts-page.component.html',
   styleUrl: './posts-page.component.scss',

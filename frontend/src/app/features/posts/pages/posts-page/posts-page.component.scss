@@ -459,6 +459,11 @@
   font-size: 0.8125rem;
 }
 
+.posts-toolbar-bulk-active {
+  box-shadow: inset 0 0 0 2px currentColor;
+  opacity: 0.95;
+}
+
 /* Ajustar iconos simples de texto como "[ ]" y "+" */
 .posts-toolbar-new .text-lg {
   line-height: 1;

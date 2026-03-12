@@ -2,7 +2,7 @@
   <header class="posts-header">
     <div class="posts-header-inner">
       <a routerLink="/posts" class="posts-logo">
-        <span class="posts-logo-icon">PCM</span>
+        <app-icon-logo />
         <div class="posts-logo-text">
           <span class="posts-logo-title">Posts &amp; Comments</span>
           <span class="posts-logo-subtitle">Manager</span>
@@ -68,6 +68,17 @@
                 <span>Nuevo post</span>
               </span>
             </button>
+            <button
+              type="button"
+              class="btn-primary posts-toolbar-new"
+              [class.posts-toolbar-bulk-active]="showBulkForm"
+              (click)="openBulkForm()"
+            >
+              <span class="inline-flex items-center gap-2">
+                <span class="text-lg leading-none">+</span>
+                <span>Carga masiva</span>
+              </span>
+            </button>
           </div>
         }
       </div>
@@ -104,14 +115,6 @@
                 (click)="setView('mine')"
               >
                 Mis posts
-              </button>
-              <button
-                type="button"
-                class="posts-filter"
-                [class.active]="showBulkForm"
-                (click)="openBulkForm()"
-              >
-                Carga masiva
               </button>
             </div>
           }
