@@ -61,10 +61,15 @@ export interface UpdateCommentDto {
 export class PostsService {
   constructor(private http: HttpClient) {}
 
-  getPosts(page = 1, limit = 10) {
-    const params = new HttpParams()
+  getPosts(page = 1, limit = 10, createdByUserId?: string) {
+    let params = new HttpParams()
       .set('page', page)
       .set('limit', limit);
+
+    if (createdByUserId) {
+      params = params.set('createdByUserId', createdByUserId);
+    }
+
     return this.http
       .get<ApiSuccess<BackendPaginated<Post>>>(`${environment.apiUrl}/posts`, { params })
       .pipe(

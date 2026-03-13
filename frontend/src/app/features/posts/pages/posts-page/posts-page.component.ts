@@ -43,27 +43,9 @@ export class PostsPageComponent implements OnInit {
     }),
   );
   displayedPosts = computed(() => {
-    const user = this.auth.currentUser;
     let result = this.posts();
 
-    // Vista \"Mis posts\": solo posts del usuario (en cualquier estado)
-    if (user && this.view === 'mine') {
-      result = result.filter((p) => {
-        // Si el post tiene información del creador, usamos el id del usuario autenticado
-        if (p.createdByUserId) {
-          return p.createdByUserId === user.id;
-        }
-        // Compatibilidad hacia atrás: posts antiguos sin createdBy usan el author
-        return p.author === user.name || p.author === user.email;
-      });
-    } else {
-      // Vista \"Lista de posts\" o usuario sin login: solo publicados
-      result = result.filter(
-        (p) => (p.status ?? POST_STATUS.CREADO) === POST_STATUS.PUBLICADO,
-      );
-    }
-
-    // Filtro por búsqueda (título)
+    // Filtro por búsqueda (título) - el filtro por estado/usuario ya lo hace el backend
     const term = this.search().trim().toLowerCase();
     if (term) {
       result = result.filter((p) =>
@@ -74,13 +56,18 @@ export class PostsPageComponent implements OnInit {
     return result;
   });
 
-  /** Total de publicaciones cargadas */
+  /** Total de publicaciones cargadas (del backend) */
   totalPostsCount = computed(() => this.posts().length);
 
-  /** Cuántas publicaciones son del usuario actual */
+  /** Cuántas publicaciones son del usuario actual (solo tiene valor cuando view === 'mine') */
   myPostsCount = computed(() => {
     const user = this.auth.currentUser;
     if (!user) return 0;
+    // Cuando estamos en vista 'mine', totalFromApi ya contiene el total de posts del usuario
+    if (this.view === 'mine') {
+      return this.totalFromApi;
+    }
+    // En otras vistas, contamos los posts del usuario en los datos cargados (puede no ser preciso)
     return this.posts().filter((p) => {
       if (p.createdByUserId) return p.createdByUserId === user.id;
       return p.author === user.name || p.author === user.email;
@@ -134,7 +121,11 @@ export class PostsPageComponent implements OnInit {
   loadPosts(page = 1) {
     this.loading = true;
     this.error = null;
-    this.postsService.getPosts(page, this.pageSize).subscribe({
+
+    const user = this.auth.currentUser;
+    const createdByUserId = this.view === 'mine' && user ? user.id : undefined;
+
+    this.postsService.getPosts(page, this.pageSize, createdByUserId).subscribe({
       next: (res: PaginatedResponse<Post>) => {
         this.posts.set(res.items ?? []);
         this.currentPage = res.page;
