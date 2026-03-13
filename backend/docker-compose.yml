@@ -1,0 +1,68 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: posts-backend
+    restart: unless-stopped
+    ports:
+      - '${PORT:-3000}:3000'
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - MONGODB_URI=mongodb://mongodb:27017/${MONGO_DB_NAME:-posts-comments-db}
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=3000
+    volumes:
+      - uploads-data:/app/uploads
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - posts-network
+
+  mongodb:
+    image: mongo:7
+    container_name: posts-mongodb
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_DB_NAME:-posts-comments-db}
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - posts-network
+
+  mongo-express:
+    image: mongo-express:1-20
+    container_name: posts-mongo-express
+    restart: unless-stopped
+    ports:
+      - '8081:8081'
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_ADMIN_USER:-admin}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_ADMIN_PASSWORD}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - posts-network
+
+volumes:
+  mongodb-data:
+    name: posts-mongodb-data
+  uploads-data:
+    name: posts-uploads-data
+
+networks:
+  posts-network:
+    name: posts-network
+    driver: bridge
