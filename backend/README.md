@@ -33,10 +33,34 @@ backend/
 │   ├── comments/       # Sistema de comentarios
 │   ├── uploads/        # Subida de archivos
 │   └── app.module.ts   # Módulo principal
+├── docs/               # Documentación y recursos auxiliares
 ├── test/               # Tests e2e
 ├── Dockerfile          # Imagen Docker
 └── docker-compose.yml  # Orquestación de servicios
 ```
+
+## Carpeta docs
+
+La carpeta `docs/` contiene recursos auxiliares para trabajar con la API:
+
+| Archivo | Descripción |
+|---------|-------------|
+| `postman-collection_posts-comments-api.json` | Colección de Postman con todos los endpoints de la API, lista para importar |
+| `ejemplo-carga-masiva.json` | 20 posts de ejemplo para pruebas y carga inicial de datos |
+
+### Colección de Postman
+
+Importa el archivo `postman-collection_posts-comments-api.json` en Postman para tener acceso a todos los endpoints organizados por categoría (Auth, Posts, Comments, Uploads).
+
+**Variables de entorno requeridas en Postman:**
+- `baseUrl`: URL base del servidor (ej: `http://localhost:3000`)
+- `token`: Se establece automáticamente al hacer login
+
+### Ejemplo de carga masiva
+
+El archivo `ejemplo-carga-masiva.json` contiene un array de posts de ejemplo y Puedes usarlo para:
+- Poblar la base de datos con datos de prueba
+- Probar el endpoint de creación masiva de posts
 
 ## Requisitos previos
 
