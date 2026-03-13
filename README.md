@@ -1,40 +1,49 @@
-# Posts-Comments-Manager
+# Posts Comments Manager
 
-Proyecto fullstack para gestionar publicaciones y comentarios.
+Aplicación fullstack para la gestión de publicaciones y comentarios con autenticación de usuarios.
 
-## Estructura
+## Descripción
 
-- **`backend/`** — API REST con NestJS, MongoDB (Mongoose), autenticación, posts y comentarios.
-- **`frontend/`** — Aplicación Angular con Tailwind CSS.
+Sistema completo que permite a los usuarios registrarse, crear publicaciones, comentar en posts de otros usuarios y gestionar su propio contenido. Construido con tecnologías modernas y buenas prácticas de desarrollo.
+
+## Arquitectura
+
+```
+Posts-Comments-Manager/
+├── backend/          # API REST (NestJS + MongoDB)
+├── frontend/         # Aplicación web (Angular + Tailwind)
+└── README.md
+```
+
+| Componente | Tecnología | Puerto |
+|------------|------------|--------|
+| Frontend | Angular 18 + Tailwind CSS | 4200 |
+| Backend | NestJS 11 + TypeScript | 3000 |
+| Base de datos | MongoDB 7 | 27017 |
+| Admin DB | Mongo Express | 8081 |
+
+## Características
+
+- **Autenticación JWT**: Sistema seguro de registro e inicio de sesión
+- **CRUD de Posts**: Crear, leer, actualizar y eliminar publicaciones
+- **Sistema de Comentarios**: Comentarios asociados a cada publicación
+- **Subida de Archivos**: Soporte para imágenes en publicaciones
+- **Documentación API**: Swagger integrado
+- **Docker Ready**: Despliegue con contenedores
+
 
 ## Requisitos
 
-- Node.js 18.19+ (recomendado 20 LTS o 22)
-- MongoDB (local o remoto)
+- **Node.js** 18.19+ (recomendado 20 LTS o 22)
+- **MongoDB** 6+ (local o Docker)
+- **npm** o **yarn**
+- **Docker** y **Docker Compose** (opcional)
 
-## Inicio rápido
+## Documentación adicional
 
-### Backend
-
-```bash
-cd backend
-cp .env.example .env   # Configura las variables de entorno
-npm install
-npm run start:dev
-```
-
-API en `http://localhost:3000` (por defecto). Documentación Swagger en `/api` (si está configurado).
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm start
-```
-
-Aplicación en `http://localhost:4200`.
+- [Backend README](./backend/README.md) - Documentación detallada de la API
+- [Frontend README](./frontend/README.md) - Documentación de la aplicación web
 
 ## Licencia
 
-UNLICENSED (privado).
+Wilmer García (Privado)
