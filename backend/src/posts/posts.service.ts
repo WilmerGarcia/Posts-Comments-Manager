@@ -4,8 +4,9 @@ import { Model } from 'mongoose';
 import { Post, PostDocument } from './schemas/post.schema';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PaginationDto } from '../common/dto/pagination.dto';
+import { FilterPostsDto } from './dto/filter-posts.dto';
 import { PaginatedResponse } from '../common/responses/api-response.interface';
+import { POST_STATUS } from './post-status.enum';
 
 @Injectable()
 export class PostsService {
@@ -27,14 +28,22 @@ export class PostsService {
     return created as unknown as Post[];
   }
 
-  async findAll(pagination?: PaginationDto): Promise<PaginatedResponse<Post>> {
-    const page = pagination?.page ?? 1;
-    const limit = pagination?.limit ?? 10;
+  async findAll(filters?: FilterPostsDto): Promise<PaginatedResponse<Post>> {
+    const page = filters?.page ?? 1;
+    const limit = filters?.limit ?? 10;
     const skip = (page - 1) * limit;
-    // count y find en paralelo para no hacer dos viajes secuenciales
+
+    const query: Record<string, unknown> = {};
+
+    if (filters?.createdByUserId) {
+      query.createdByUserId = filters.createdByUserId;
+    } else {
+      query.status = POST_STATUS.PUBLICADO;
+    }
+
     const [data, total] = await Promise.all([
-      this.postModel.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean().exec(),
-      this.postModel.countDocuments().exec(),
+      this.postModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean().exec(),
+      this.postModel.countDocuments(query).exec(),
     ]);
 
     return {

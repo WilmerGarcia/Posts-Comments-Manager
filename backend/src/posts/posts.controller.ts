@@ -14,7 +14,7 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreatePostBulkDto } from './dto/create-post-bulk.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { PaginationDto } from '../common/dto/pagination.dto';
+import { FilterPostsDto } from './dto/filter-posts.dto';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -34,9 +34,12 @@ export class PostsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar todos los posts' })
-  findAll(@Query() pagination: PaginationDto) {
-    return this.postsService.findAll(pagination);
+  @ApiOperation({
+    summary: 'Listar posts',
+    description: 'Si se proporciona createdByUserId, retorna todos los posts de ese usuario. Si no, solo retorna posts PUBLICADOS.',
+  })
+  findAll(@Query() filters: FilterPostsDto) {
+    return this.postsService.findAll(filters);
   }
 
   @Get(':id')
