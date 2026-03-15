@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Param, Delete, Query, Patch } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiPropertyOptional } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Delete, Query, Patch, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsMongoId, IsOptional } from 'class-validator';
 import { ParseObjectIdPipe } from '../common/pipes/parse-object-id.pipe';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -34,12 +35,16 @@ export class CommentsController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Crear comentario' })
   create(@Body() createCommentDto: CreateCommentDto) {
     return this.commentsService.create(createCommentDto);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Actualizar un comentario' })
   update(
     @Param('id', ParseObjectIdPipe) id: string,
@@ -49,6 +54,8 @@ export class CommentsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Eliminar un comentario' })
   remove(@Param('id', ParseObjectIdPipe) id: string) {
     return this.commentsService.remove(id);

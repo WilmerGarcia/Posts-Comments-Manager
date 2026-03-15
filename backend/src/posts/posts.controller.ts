@@ -7,9 +7,11 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ParseObjectIdPipe } from '../common/pipes/parse-object-id.pipe';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreatePostBulkDto } from './dto/create-post-bulk.dto';
@@ -22,12 +24,16 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Crear un post' })
   create(@Body() createPostDto: CreatePostDto) {
     return this.postsService.create(createPostDto);
   }
 
   @Post('bulk')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Carga masiva de posts' })
   createBulk(@Body() dto: CreatePostBulkDto) {
     return this.postsService.createBulk(dto.posts);
@@ -49,6 +55,8 @@ export class PostsController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Editar un post' })
   update(
     @Param('id', ParseObjectIdPipe) id: string,
@@ -58,6 +66,8 @@ export class PostsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Eliminar un post' })
   remove(@Param('id', ParseObjectIdPipe) id: string) {
     return this.postsService.remove(id);
